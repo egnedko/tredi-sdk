@@ -36,6 +36,6 @@ versioned section on release.
 - Dual ESM/CJS build with type declarations; `sideEffects: false`.
 - Post deletion (`publishing.deletePost`) and polls (`publishing.publishPoll`).
 
-<!-- Replace YOUR_GITHUB_USERNAME once this repo has a real home on GitHub. -->
-[Unreleased]: https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/releases/tag/v0.1.0
+<!-- Replace egnedko once this repo has a real home on GitHub. -->
+[Unreleased]: https://github.com/egnedko/tredi-sdk/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/egnedko/tredi-sdk/releases/tag/v0.1.0

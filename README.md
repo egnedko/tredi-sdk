@@ -1,7 +1,7 @@
 # tredi-sdk
 
-<!-- Replace YOUR_GITHUB_USERNAME once this repo has a real home on GitHub. -->
-[![CI](https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/actions/workflows/ci.yml)
+<!-- Replace egnedko once this repo has a real home on GitHub. -->
+[![CI](https://github.com/egnedko/tredi-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/egnedko/tredi-sdk/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/tredi-sdk.svg)](https://www.npmjs.com/package/tredi-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 

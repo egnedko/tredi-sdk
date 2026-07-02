@@ -41,13 +41,13 @@ public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to **fgnedko@gmail.com**. All complaints will be reviewed and
+reported to **<egnedko@gmail.com>**. All complaints will be reviewed and
 investigated promptly and fairly.
 
 ## Attribution
 
 This Code of Conduct is adapted from the [Contributor Covenant][homepage],
 version 2.1, available at
-https://www.contributor-covenant.org/version/2/1/code_of_conduct.html.
+<https://www.contributor-covenant.org/version/2/1/code_of_conduct.html>.
 
 [homepage]: https://www.contributor-covenant.org
