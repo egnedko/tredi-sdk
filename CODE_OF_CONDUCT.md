@@ -41,7 +41,7 @@ public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to **<egnedko@gmail.com>**. All complaints will be reviewed and
+reported to **<egnedko+tredisdk@gmail.com>**. All complaints will be reviewed and
 investigated promptly and fairly.
 
 ## Attribution

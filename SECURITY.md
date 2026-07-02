@@ -9,7 +9,7 @@ requests, etc.) seriously.
 
 **Do not open a public GitHub issue.**
 
-Email **fgnedko@gmail.com** with:
+Email **egnedko+tredisdk@gmail.com** with:
 
 - A description of the vulnerability and its impact.
 - Steps to reproduce (a minimal repro is ideal).
