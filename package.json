@@ -4,6 +4,15 @@
   "description": "Typed, ESM-first SDK for the Meta Threads API.",
   "type": "module",
   "license": "MIT",
+  "author": "Ievgen Gnedko <fgnedko@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/issues"
+  },
+  "homepage": "https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk#readme",
   "sideEffects": false,
   "engines": {
     "node": ">=18"

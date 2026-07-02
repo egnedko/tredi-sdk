@@ -189,21 +189,31 @@ ready before `maxWaitMs` (default 60000; poll interval default 2000).
 | Method | Signature |
 |---|---|
 | `publishText` | `(text, options?) => Promise<ContainerRef>` |
+| `publishPoll` | `(text, poll, options?) => Promise<ContainerRef>` |
 | `publishImage` | `({ imageUrl, ...opts }) => Promise<ContainerRef>` |
 | `publishVideo` | `({ videoUrl, ...opts }) => Promise<ContainerRef>` (waits for processing) |
 | `publishCarousel` | `({ items, text?, replyControl?, userId?, signal?, wait? }) => Promise<ContainerRef>` |
 
 `publishCarousel` requires ≥2 items; each item is `{ imageUrl?, videoUrl?, altText? }`.
 
+`publishPoll`'s `poll` argument is `{ optionA, optionB, optionC?, optionD? }` (2–4 options,
+TEXT posts only). Serialized as `poll_attachment`, a JSON object with snake_case keys.
+
 ### `publishing.getPublishingLimit(options?)` → `Promise<PublishingLimit>`
 
 Endpoint: `GET /{user}/threads_publishing_limit`. Reports remaining quota
 (250 posts / 1000 replies / 100 deletes per 24h). `options`: `{ userId?, signal? }`.
 
+### `publishing.deletePost(postId, options?)` → `Promise<{ success: boolean }>`
+
+Scope: `threads_delete`. Endpoint: `DELETE /{post-id}`. `options`: `{ signal? }`.
+
 ```ts
 const post = await threads.publishing.publishText('gm ☕')
+await threads.publishing.publishPoll('Coffee or tea?', { optionA: 'Coffee', optionB: 'Tea' })
 await threads.publishing.publishVideo({ videoUrl: 'https://…/v.mp4', text: 'demo' })
 await threads.publishing.publishCarousel({ items: [{ imageUrl: 'a' }, { imageUrl: 'b' }] })
+await threads.publishing.deletePost(post.id)
 ```
 
 ---

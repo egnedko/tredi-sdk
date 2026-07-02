@@ -34,11 +34,8 @@ versioned section on release.
 - Redacting logging hooks — access tokens, app secrets, and OAuth codes are
   never logged.
 - Dual ESM/CJS build with type declarations; `sideEffects: false`.
+- Post deletion (`publishing.deletePost`) and polls (`publishing.publishPoll`).
 
-### Notes
-
-- Post deletion is intentionally not implemented yet (exact method/path not
-  confirmed against the official docs in this release).
-
-[Unreleased]: https://example.com/compare/v0.1.0...HEAD
-[0.1.0]: https://example.com/releases/tag/v0.1.0
+<!-- Replace YOUR_GITHUB_USERNAME once this repo has a real home on GitHub. -->
+[Unreleased]: https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/releases/tag/v0.1.0

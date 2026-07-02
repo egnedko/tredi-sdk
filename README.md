@@ -1,5 +1,10 @@
 # tredi-sdk
 
+<!-- Replace YOUR_GITHUB_USERNAME once this repo has a real home on GitHub. -->
+[![CI](https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/tredi-sdk/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/tredi-sdk.svg)](https://www.npmjs.com/package/tredi-sdk)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A typed, ESM-first SDK for the [Meta Threads API](https://developers.facebook.com/docs/threads).
 
 - **TypeScript-first** — strict types, every endpoint and field modeled from the official docs.
@@ -8,7 +13,7 @@ A typed, ESM-first SDK for the [Meta Threads API](https://developers.facebook.co
 - **ESM + CJS** — dual output, `sideEffects: false`, tree-shakeable.
 - **Security-first** — access tokens and app secrets are never written to logs.
 
-> Scope: this SDK models the documented Threads endpoints (publishing, posts, replies & moderation, insights, mentions, keyword search, quota, OAuth). Post **deletion** is intentionally omitted until its exact method/path is confirmed against the docs — see [Coverage](#coverage).
+> Scope: this SDK models the documented Threads endpoints — publishing (text, image, video, carousel, polls, deletion), posts, replies & moderation, insights, mentions, keyword search, quota, OAuth. See [Coverage](#coverage).
 
 ## Documentation
 
@@ -115,10 +120,14 @@ await threads.publishing.publishCarousel({
   items: [{ imageUrl: 'https://…/1.jpg' }, { imageUrl: 'https://…/2.jpg' }],
   text: 'a set',
 })
+await threads.publishing.publishPoll('Coffee or tea?', { optionA: 'Coffee', optionB: 'Tea' })
 
 // Or drive the two steps manually for full control.
 const { id: creationId } = await threads.publishing.createContainer({ mediaType: 'TEXT', text: 'hi' })
 await threads.publishing.publishContainer(creationId)
+
+// Delete a published post (requires the `threads_delete` scope).
+await threads.publishing.deletePost(post.id)
 
 // Remaining quotas (250 posts / 1000 replies / 100 deletes per 24h).
 const limit = await threads.publishing.getPublishingLimit()
@@ -244,7 +253,7 @@ const data = await threads.request<{ data: unknown[] }>({
 | Replies, Conversation, Hide/Unhide, Approval queue | ✅ |
 | Insights (media + user, demographics breakdown) | ✅ |
 | Mentions, Keyword search | ✅ |
-| Post deletion | ⛔️ omitted — method/path not confirmed in docs this pass |
+| Post deletion | ✅ |
 
 ## Development
 
@@ -256,6 +265,12 @@ pnpm test:coverage
 pnpm lint          # eslint
 pnpm build         # tsup → dist (esm + cjs + d.ts)
 ```
+
+## Contributing
+
+Issues and PRs welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md). Please
+follow the [Code of Conduct](./CODE_OF_CONDUCT.md). Found a security issue?
+See [SECURITY.md](./SECURITY.md) instead of opening a public issue.
 
 ## License
 
