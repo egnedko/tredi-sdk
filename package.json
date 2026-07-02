@@ -13,6 +13,9 @@
     "url": "https://github.com/egnedko/tredi-sdk/issues"
   },
   "homepage": "https://github.com/egnedko/tredi-sdk#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
@@ -47,7 +50,9 @@
     "threads-api",
     "sdk",
     "typescript",
-    "esm"
+    "esm",
+    "social-media-api",
+    "automation"
   ],
   "scripts": {
     "build": "tsup",

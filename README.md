@@ -1,4 +1,4 @@
-# tredi-sdk
+# Tredi (Threads API sdk)
 
 <!-- Replace egnedko once this repo has a real home on GitHub. -->
 [![CI](https://github.com/egnedko/tredi-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/egnedko/tredi-sdk/actions/workflows/ci.yml)
@@ -223,6 +223,7 @@ new ThreadsClient({ accessToken, logger })
 ```
 
 Security notes:
+
 - Token-exchange helpers require the app secret — call them **server-side only**.
 - Tokens are held in memory on the client instance and sent per request; they are never logged. Use `client.withToken(t)` to scope a token per user without mutating shared config.
 - For multi-tenant storage, encrypt tokens at rest (e.g. Supabase Vault).
