@@ -1,8 +1,12 @@
 /**
  * Logging hooks. The SDK never writes to the console itself; it calls the
- * injected logger so the host app controls transport and level. All built-in
- * log calls route through {@link redactUrl} / {@link redactParams} so secrets
- * (access tokens, app secrets, OAuth codes) never reach the logger.
+ * injected logger so the host app controls transport and level. The SDK's own
+ * log calls (in `http.ts`) only ever include a redacted URL — never raw
+ * request params or the access token — via {@link redactUrl}.
+ *
+ * {@link redactParams} is exported as a standalone utility for host apps that
+ * build a custom logger and want to log request params (not just the URL)
+ * safely; the SDK itself doesn't need it since it never logs params.
  */
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'

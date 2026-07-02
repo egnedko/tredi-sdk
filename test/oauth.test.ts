@@ -90,3 +90,68 @@ describe('refreshLongLivedToken', () => {
     expect(url.searchParams.get('access_token')).toBe('long-tok')
   })
 })
+
+describe('security: OAuth secrets never reach the logger', () => {
+  // exchangeForLongLivedToken is a GET request and `client_secret` genuinely
+  // ends up in the request URL (that's how Meta's endpoint is documented) —
+  // so this is the one call where a naive "log the URL" implementation could
+  // leak it. The SDK avoids this by logging the pre-query-string `req.url`,
+  // never the fully-built URL sent to `fetch`. These tests pin that down.
+  type Entry = { level: unknown; message: string; context?: Record<string, unknown> }
+
+  it('exchangeCodeForToken never logs the code or the app secret', async () => {
+    const entries: Entry[] = []
+    const logger = { log: (level: unknown, message: string, context?: Record<string, unknown>) =>
+      entries.push({ level, message, context }) }
+    const fetchImpl = mockFetch([{ body: { access_token: 'short-tok', user_id: '42' } }])
+
+    await exchangeCodeForToken({
+      clientId: 'app-123',
+      clientSecret: 'super-secret',
+      code: 'one-time-code',
+      redirectUri: 'https://app.example.com/cb',
+      fetch: fetchImpl,
+      logger,
+    })
+
+    expect(entries.length).toBeGreaterThan(0)
+    const serialized = JSON.stringify(entries)
+    expect(serialized).not.toContain('super-secret')
+    expect(serialized).not.toContain('one-time-code')
+  })
+
+  it('exchangeForLongLivedToken never logs the app secret (even though it is a GET)', async () => {
+    const entries: Entry[] = []
+    const logger = { log: (level: unknown, message: string, context?: Record<string, unknown>) =>
+      entries.push({ level, message, context }) }
+    const fetchImpl = mockFetch([
+      { body: { access_token: 'long-tok', token_type: 'bearer', expires_in: 5184000 } },
+    ])
+
+    await exchangeForLongLivedToken({
+      clientSecret: 'super-secret',
+      shortLivedToken: 'short-tok',
+      fetch: fetchImpl,
+      logger,
+    })
+
+    expect(entries.length).toBeGreaterThan(0)
+    const serialized = JSON.stringify(entries)
+    expect(serialized).not.toContain('super-secret')
+    expect(serialized).not.toContain('short-tok')
+  })
+
+  it('refreshLongLivedToken never logs the long-lived token', async () => {
+    const entries: Entry[] = []
+    const logger = { log: (level: unknown, message: string, context?: Record<string, unknown>) =>
+      entries.push({ level, message, context }) }
+    const fetchImpl = mockFetch([
+      { body: { access_token: 'refreshed', token_type: 'bearer', expires_in: 5184000 } },
+    ])
+
+    await refreshLongLivedToken({ longLivedToken: 'the-long-token', fetch: fetchImpl, logger })
+
+    expect(entries.length).toBeGreaterThan(0)
+    expect(JSON.stringify(entries)).not.toContain('the-long-token')
+  })
+})

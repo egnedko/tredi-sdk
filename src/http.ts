@@ -17,6 +17,7 @@ import {
   ThreadsNetworkError,
   ThreadsRateLimitError,
   ThreadsTimeoutError,
+  ThreadsValidationError,
   toApiError,
 } from './errors.js'
 import { type Logger, noopLogger, redactUrl } from './logger.js'
@@ -176,10 +177,36 @@ async function sendOnce<T>(req: SendRequest): Promise<T> {
 }
 
 /**
+ * Rejects a URL that already contains a query string, fragment, or whitespace
+ * before we've had a chance to append our own query params.
+ *
+ * Every legitimate call site builds `url` as `{base}/{version}{path}`, where
+ * `path` is a template like `/${mediaId}/replies` — never containing `?`/`#`
+ * on its own. If one of those interpolated ids came from untrusted input
+ * (e.g. a webhook payload passed straight through without validation) and
+ * contained `?access_token=...` or similar, it would otherwise smuggle extra
+ * query params — or redirect the request to a different path/endpoint
+ * entirely — once we append the real query string. Failing closed here turns
+ * that into a clear, immediate `ThreadsValidationError` instead of a
+ * malformed or hijacked request.
+ */
+function assertCleanUrl(url: string): void {
+  if (/[?#\s]/.test(url)) {
+    throw new ThreadsValidationError(
+      `Invalid request URL "${url}" — it contains "?", "#", or whitespace before query ` +
+        'params were added. This usually means an unvalidated id (e.g. from a webhook ' +
+        'payload) was interpolated into a resource path. Validate ids before passing them ' +
+        'to the SDK.',
+    )
+  }
+}
+
+/**
  * Sends a request with automatic retries. This is the only function that talks
  * to the network in the SDK.
  */
 export async function send<T>(req: SendRequest): Promise<T> {
+  assertCleanUrl(req.url)
   const logger = req.logger ?? noopLogger
   const retryConfig: RetryConfig =
     req.retry === false ? { ...DEFAULT_RETRY, maxRetries: 0 } : req.retry

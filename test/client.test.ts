@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
 import { ThreadsClient } from '../src/client.js'
-import { ThreadsAPIError, ThreadsNetworkError, ThreadsTimeoutError } from '../src/errors.js'
+import {
+  ThreadsAPIError,
+  ThreadsNetworkError,
+  ThreadsTimeoutError,
+  ThreadsValidationError,
+} from '../src/errors.js'
 import type { LogContext, Logger, LogLevel } from '../src/logger.js'
 import { bodyOf, hangingFetch, mockFetch } from './helpers.js'
 
@@ -199,6 +204,48 @@ describe('security: logging never leaks the token', () => {
 
     expect(entries.length).toBeGreaterThan(0)
     expect(JSON.stringify(entries)).not.toContain(TOKEN)
+  })
+
+  it('never logs the raw token even when a request fails', async () => {
+    const entries: { level: LogLevel; message: string; context?: LogContext }[] = []
+    const logger: Logger = { log: (level, message, context) => entries.push({ level, message, context }) }
+    const fetchImpl = mockFetch([{ status: 401, body: { error: { message: 'bad token', code: 190 } } }])
+    const client = new ThreadsClient({ accessToken: TOKEN, fetch: fetchImpl, logger, retry: false })
+
+    await expect(client.profile.get()).rejects.toThrow()
+
+    expect(entries.length).toBeGreaterThan(0)
+    expect(JSON.stringify(entries)).not.toContain(TOKEN)
+  })
+})
+
+describe('security: path injection via unvalidated ids', () => {
+  it('rejects an id containing "?" instead of silently smuggling query params', async () => {
+    const fetchImpl = mockFetch([{ body: { success: true } }])
+    const client = new ThreadsClient({ accessToken: TOKEN, fetch: fetchImpl })
+
+    // Simulates an id sourced from untrusted input (e.g. a webhook payload)
+    // that was never validated before being handed to the SDK.
+    await expect(
+      client.publishing.deletePost('123?access_token=attacker-controlled'),
+    ).rejects.toThrow(ThreadsValidationError)
+    expect(fetchImpl.calls).toHaveLength(0) // no request was ever sent
+  })
+
+  it('rejects ids containing "#" or whitespace', async () => {
+    const fetchImpl = mockFetch([{ body: {} }])
+    const client = new ThreadsClient({ accessToken: TOKEN, fetch: fetchImpl })
+
+    await expect(client.posts.get('123#frag')).rejects.toThrow(ThreadsValidationError)
+    await expect(client.posts.get('123 456')).rejects.toThrow(ThreadsValidationError)
+  })
+
+  it('still accepts normal Threads ids (numeric, "me", underscores/hyphens)', async () => {
+    const fetchImpl = mockFetch([{ body: { id: '1' } }])
+    const client = new ThreadsClient({ accessToken: TOKEN, fetch: fetchImpl })
+
+    await expect(client.posts.get('17895948570123456')).resolves.toBeDefined()
+    await expect(client.profile.get({ userId: 'me' })).resolves.toBeDefined()
   })
 })
 

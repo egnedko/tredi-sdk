@@ -19,6 +19,20 @@ versioned section on release.
 ### Security
 -->
 
+### Security
+
+- Every request now rejects an id (`mediaId`, `postId`, `replyId`, `userId`,
+  `containerId`, ...) that contains `?`, `#`, or whitespace before it's
+  interpolated into the request path, throwing `ThreadsValidationError`
+  instead of silently building a request with smuggled query params or an
+  unintended path. This matters most when an id comes from untrusted input
+  (e.g. an inbound webhook payload) and was never validated by the caller.
+- Added regression tests pinning down that OAuth secrets (`client_secret`,
+  the one-time `code`) and access tokens never reach a configured `logger`,
+  including for `exchangeForLongLivedToken` (a GET request where
+  `client_secret` is genuinely part of the URL sent to Meta, though never
+  part of what the SDK logs) and for failed requests.
+
 ## [0.1.0] - 2026-06-20
 
 ### Added

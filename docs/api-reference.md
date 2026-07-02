@@ -375,6 +375,16 @@ ThreadsError
 (quote `fbtraceId` when contacting Meta support). `ThreadsRateLimitError` adds
 `retryAfterMs?`.
 
+### Id validation (`ThreadsValidationError`)
+
+Every id you pass (`mediaId`, `postId`, `replyId`, `userId`, `containerId`, ...)
+is interpolated directly into the request path. The SDK rejects ids
+containing `?`, `#`, or whitespace with `ThreadsValidationError` **before**
+sending anything — otherwise a value like `"123?access_token=..."` could
+smuggle extra query params or redirect the request to an unintended path.
+This matters most if an id comes from untrusted input, e.g. a webhook
+payload — validate/trust ids from external sources before passing them in.
+
 ### Utilities
 
 - `toApiError(status, body, headers?)` → maps a Graph response to the right subtype.
